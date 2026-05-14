@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { supabase } from "../../lib/supabase/client";
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -29,7 +29,7 @@ export default function LoginPage() {
     if (error) {
       alert(error.message)
     } else {
-      alert('Logged in!')
+      window.location.href = "/dashboard";
     }
   }
 
