@@ -1,3 +1,5 @@
+import LoginButton from "@/components/LoginButton";
+
 export default function Home() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-black text-white">
@@ -6,6 +8,7 @@ export default function Home() {
         <p className="mt-4 text-xl text-gray-400">
           The future of immersive VR storytelling.
         </p>
+        <LoginButton />
       </div>
     </main>
   );

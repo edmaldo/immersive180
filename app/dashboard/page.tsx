@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
-import { createClient } from "../../lib/supabase/server";
-import LogoutButton from "./LogoutButton";
+import { createClient } from "@/lib/supabase/server";
+import BuyButton from "@/components/BuyButton";
+import LogoutButton from "@/components/LogoutButton";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -20,6 +21,7 @@ export default async function DashboardPage() {
       <p>Welcome {user.email}</p>
 
       <LogoutButton />
+      <BuyButton />
     </main>
   );
 }
