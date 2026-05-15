@@ -2,9 +2,10 @@ import LoginButton from "@/components/buttons/LoginButton"
 
 export default function HomePage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-[#050505] px-6 text-white">
+    <main className="hero-glow flex min-h-screen flex-col items-center justify-center">
       <div className="text-center">
         <h1 className="
+        font-sans
         animate-[glow_4s_ease-in-out_infinite]
         bg-gradient-to-r
         from-white
@@ -12,18 +13,19 @@ export default function HomePage() {
         to-cyan-300
         bg-clip-text
         text-7xl
-        font-black
-        tracking-tight
         text-transparent
-        drop-shadow-[0_0_25px_rgba(124,58,237,0.35)]
         md:text-8xl
         lg:text-9xl
+        font-[650]
+        tracking-[-0.06em]
+        drop-shadow-[0_0_30px_rgba(168,85,247,0.18)]
+        uppercase
         ">
-          IMMERSIVE180
+          immersive180
         </h1>
 
-        <p className="mt-6 text-xl text-zinc-400">
-          The future of immersive VR storytelling.
+        <p className="mt-6 text-sm tracking-[0.25em] text-white/45 uppercase">
+          The future of VR storytelling
         </p>
 
         <div className="mt-10 flex justify-center">
