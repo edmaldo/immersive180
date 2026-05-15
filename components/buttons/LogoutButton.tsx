@@ -1,5 +1,5 @@
 "use client"
-
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 
@@ -9,7 +9,7 @@ export default function LogoutButton() {
 
     await supabase.auth.signOut()
 
-    window.location.href = "/login"
+    redirect("/")
   }
 
   return (

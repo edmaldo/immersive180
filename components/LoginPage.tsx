@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { supabase } from "@/lib/supabase/client"
+import { useRouter } from "next/navigation"
 import { Eye, EyeOff, Lock, Mail, Zap, ShieldCheck, Users } from "lucide-react"
 import ImmersiveCanvasSection from "@/components/immersive/ImmersiveCanvasSection"
 
@@ -9,11 +10,15 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const router = useRouter()
 
   const handleSignup = async () => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: "https://immersive180.com/auth/callback",
+  },
     })
 
     if (error) {
@@ -32,7 +37,7 @@ export default function LoginPage() {
     if (error) {
       alert(error.message)
     } else {
-      window.location.href = "/dashboard"
+      router.push("/dashboard")
     }
   }
 
