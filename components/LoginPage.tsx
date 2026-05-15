@@ -55,11 +55,21 @@ export default function LoginPage() {
             
             {/* Logo */}
             <div className="mb-10 flex items-center">
-  <div className="rounded-2xl border border-white/20 bg-white/[0.03] px-6 py-4 backdrop-blur-xl shadow-[0_0_30px_rgba(139,92,246,0.12)]">
+  <div className="rounded-2xl border border-white/20 bg-white/[0.03] px-4 py-3 sm:px-6 sm:py-4 backdrop-blur-xl shadow-[0_0_30px_rgba(139,92,246,0.12)]">
     
-    <span className="text-[28px] font-extralight tracking-[0.45em] text-white">
+    <span className="
+      text-[16px]
+      sm:text-[22px]
+      md:text-[28px]
+      font-extralight
+      tracking-[0.25em]
+      sm:tracking-[0.35em]
+      md:tracking-[0.45em]
+      text-white
+      whitespace-nowrap
+    ">
       IMMERSIVE
-      <span className="ml-3 bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text text-transparent">
+      <span className="ml-2 sm:ml-3 bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text text-transparent">
         180
       </span>
     </span>
