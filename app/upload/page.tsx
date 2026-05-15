@@ -1,4 +1,4 @@
-import CreatorUpload from '@/components/CreatorUpload'
+import CreatorUpload from '@/components/upload/CreatorUpload'
 
 export default function UploadPage() {
   return (

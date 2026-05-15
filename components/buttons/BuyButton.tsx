@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/button"
+
 export default function BuyButton() {
   const handleCheckout = async () => {
     const res = await fetch("/api/checkout", {
@@ -12,11 +14,11 @@ export default function BuyButton() {
   };
 
   return (
-    <button
+    <Button
       onClick={handleCheckout}
-      className="bg-black text-white px-4 py-2 rounded-lg"
+      className="bg-violet-600 text-white hover:bg-violet-500"
     >
       Buy VR Video
-    </button>
+    </Button>
   );
 }
