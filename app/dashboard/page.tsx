@@ -1,7 +1,6 @@
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import LogoutButton from "@/components/buttons/LogoutButton";
-
+import AvatarUpload from "@/components/profile/AvatarUpload";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -199,15 +198,19 @@ function SidebarItem({
 }
 
 export default async function DashboardPage() {
-      const supabase = await createClient();
-    
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-    
-      if (!user) {
-        redirect("/");
-      }
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: profile } = await supabase
+  .from("profiles")
+  .select("full_name, avatar_url")
+  .eq("id", user?.id)
+  .single();
+
+
   return (
     <main className="flex min-h-screen bg-black text-white">
 
@@ -226,6 +229,10 @@ export default async function DashboardPage() {
             <SidebarItem icon={<Grid2X2 size={18} />} label="Categories" />
             <SidebarItem icon={<Users size={18} />} label="Creators" />
             <SidebarItem icon={<Heart size={18} />} label="Favorites" />
+          </div>
+
+          <div className="flex-1 px-4">
+            <AvatarUpload userId={""} />
           </div>
 
           <div className="mt-10">
@@ -278,7 +285,9 @@ export default async function DashboardPage() {
         <header className="sticky top-0 z-50 border-b border-zinc-900 bg-black/80 backdrop-blur">
           <div className="flex items-center justify-between px-6 py-5">
             <div>
-              <h1 className="text-3xl font-bold">Welcome back, Explorer 👋</h1>
+              <h1 className="text-3xl font-bold">
+                
+                - Welcome - {profile?.full_name || ""}</h1>
 
               <p className="mt-1 text-zinc-400">
                 Dive back into immersive experiences.
@@ -294,14 +303,21 @@ export default async function DashboardPage() {
                 <Bell />
               </button>
 
+
               <div className="h-11 w-11 overflow-hidden rounded-full border border-zinc-700">
-                <Image
-                  src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop"
-                  alt="User avatar"
-                  width={100}
-                  height={100}
-                  className="h-full w-full object-cover"
-                />
+                  {profile?.avatar_url ? (
+                    <Image
+                      src={profile.avatar_url}
+                      alt="Avatar"
+                      width={40}
+                      height={40}
+                      className="h-10 w-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-zinc-800 text-sm text-white">
+                      {profile?.full_name?.charAt(0) || "U"}
+                    </div>
+                  )}
               </div>
             </div>
           </div>
