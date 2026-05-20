@@ -24,7 +24,10 @@ export default async function DashboardLayout({
     .from("profiles")
     .select("*")
     .eq("id", user.id)
-    .single()
+    .maybeSingle()
+
+console.log(profile)
+console.log(Error)
 
   return (
     <div>
@@ -34,7 +37,6 @@ export default async function DashboardLayout({
         <CompleteProfileModal
           userId={user.id}
           email={user.email || ""}
-          onComplete={() => {}}
         />
       )}
 

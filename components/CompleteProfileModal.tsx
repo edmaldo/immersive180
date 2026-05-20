@@ -6,11 +6,9 @@ import { createClient } from "@/lib/supabase/client"
 export default function CompleteProfileModal({
   userId,
   email,
-  onComplete,
 }: {
   userId: string
   email: string
-  onComplete: () => void
 }) {
     
     const supabase = createClient()
@@ -28,7 +26,6 @@ export default function CompleteProfileModal({
     })
 
     setLoading(false)
-    onComplete()
   }
 
   return (
