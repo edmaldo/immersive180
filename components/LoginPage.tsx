@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff, Lock, Mail, Zap, ShieldCheck, Users } from "lucide-react"
 import ImmersiveCanvasSection from "@/components/immersive/ImmersiveCanvasSection"
+import Footer from "@/components/home/Footer"
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -107,13 +108,9 @@ export default function LoginPage() {
 
               <div className="flex items-center gap-2">
                 <Users size={18} />
-                <span>Built for creators</span>
+                <span>Personalized</span>
               </div>
             </div>
-
-            <p className="mt-16 text-sm text-white/30">
-              © 2026 Immersive180. All rights reserved.
-            </p>
           </div>
 
           {/* Right Side */}
@@ -330,6 +327,7 @@ export default function LoginPage() {
   </div>
 </section>
 <ImmersiveCanvasSection />
+<Footer />
     </main>
   )
 }
