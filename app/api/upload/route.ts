@@ -1,53 +1,130 @@
-import { NextResponse } from 'next/server'
-import axios from 'axios'
+import { NextRequest, NextResponse } from "next/server"
 
-export async function POST(req: Request) {
+import { createClient } from "@/lib/supabase/server"
+
+export async function POST(req: NextRequest) {
   try {
+    const supabase = await createClient()
+
+    /*
+      AUTH USER
+    */
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      )
+    }
+
+    /*
+      GET FILE
+    */
+
     const formData = await req.formData()
 
-    const file = formData.get('video') as File
+    const file = formData.get("file") as File
+
+    const title = formData.get("title") as string
 
     if (!file) {
       return NextResponse.json(
-        { error: 'No file uploaded' },
+        { error: "No file uploaded" },
         { status: 400 }
       )
     }
 
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
+    /*
+      CREATE BUNNY VIDEO
+    */
 
-    const fileName = `${Date.now()}-${file.name}`
+    const createVideoRes = await fetch(
+      `https://video.bunnycdn.com/library/${process.env.BUNNY_LIBRARY_ID}/videos`,
+      {
+        method: "POST",
+        headers: {
+          AccessKey: process.env.BUNNY_API_KEY!,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+        }),
+      }
+    )
 
-    const storageZone = process.env.BUNNY_STORAGE_ZONE
-    const storagePassword = process.env.BUNNY_STORAGE_PASSWORD
-    const region = process.env.BUNNY_REGION
+    const bunnyVideo = await createVideoRes.json()
 
-    const bunnyBaseUrl = region
-  ? `https://${region}.storage.bunnycdn.com`
-  : `https://storage.bunnycdn.com`
+    /*
+      UPLOAD FILE TO BUNNY
+    */
 
-    const bunnyUrl = `${bunnyBaseUrl}/${storageZone}/${fileName}`
+    const uploadRes = await fetch(
+      `https://video.bunnycdn.com/library/${process.env.BUNNY_LIBRARY_ID}/videos/${bunnyVideo.guid}`,
+      {
+        method: "PUT",
+        headers: {
+          AccessKey: process.env.BUNNY_API_KEY!,
+          "Content-Type": "application/octet-stream",
+        },
+        body: file,
+      }
+    )
 
-    await axios.put(bunnyUrl, buffer, {
-      headers: {
-        AccessKey: storagePassword,
-        'Content-Type': file.type,
-      },
-      maxBodyLength: Infinity,
-    })
+    if (!uploadRes.ok) {
+      throw new Error("Upload failed")
+    }
+
+    /*
+      SAVE TO SUPABASE
+    */
+    const { data: videoRow, error } =
+      await supabase
+        .from("videos")
+        .insert({
+          creator_id: user.id,
+
+          bunny_video_id: bunnyVideo.guid,
+
+          title,
+
+          status: "processing",
+        })
+        .select()
+        .single()
+
+    if (error) {
+      console.error(error)
+
+      return NextResponse.json(
+        { error: "Database insert failed" },
+        { status: 500 }
+      )
+    }
+
+    /*
+      SUCCESS
+    */
 
     return NextResponse.json({
       success: true,
-      fileName,
-      bunnyUrl,
-    })
-  } catch (error) {
-    console.error(error)
 
-    return NextResponse.json(
-      { error: 'Upload failed' },
-      { status: 500 }
-    )
-  }
+      bunnyVideoId: bunnyVideo.guid,
+
+      video: videoRow,
+    })
+} catch (error: any) {
+  console.error("UPLOAD API ERROR:")
+  console.error(error)
+
+  return NextResponse.json(
+    {
+      error: error.message || "Upload failed",
+    },
+    { status: 500 }
+  )
+}
 }

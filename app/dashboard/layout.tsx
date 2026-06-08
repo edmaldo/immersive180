@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
-import CompleteProfileModal from "@/components/CompleteProfileModal"
+import CompleteProfileModal from "@/components/dashboard/CompleteProfileModal"
 
 export default async function DashboardLayout({
   children,

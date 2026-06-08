@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { supabase } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { Eye, EyeOff, Lock, Mail, Zap, ShieldCheck, Users } from "lucide-react"
-import ImmersiveCanvasSection from "@/components/immersive/ImmersiveCanvasSection"
 import FeaturedSection from "@/components/home/FeaturedSection"
 import Footer from "@/components/home/Footer"
 
@@ -87,7 +86,7 @@ export default function LoginPage() {
 
             <h1 className="max-w-xl text-5xl font-light leading-tight tracking-tight md:text-7xl">
               <span className="bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text text-transparent">
-                Monetize Immersive Experiences.
+                Premium VR Experiences
               </span>
             </h1>
 
@@ -109,7 +108,8 @@ export default function LoginPage() {
 
               <div className="flex items-center gap-2">
                 <Users size={18} />
-                <span>Personalized</span>
+                <span>Community-Driven
+                </span>
               </div>
             </div>
           </div>
@@ -120,11 +120,11 @@ export default function LoginPage() {
 
               <div className="mb-8">
                 <h2 className="text-4xl font-semibold tracking-tight">
-                  Welcome back
+                  Welcome
                 </h2>
 
                 <p className="mt-3 text-white/50">
-                  Login to your account or create a new one.
+                  Enter email and password to access your dashboard
                 </p>
               </div>
 
@@ -169,7 +169,7 @@ export default function LoginPage() {
                 onClick={handleLogin}
                 className="mb-6 w-full rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-500 py-4 text-lg font-medium transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(139,92,246,0.45)]"
               >
-                Login
+                Sign-In
               </button>
 
               {/* Divider */}
@@ -184,7 +184,7 @@ export default function LoginPage() {
                 onClick={handleSignup}
                 className="w-full rounded-2xl border border-white/10 bg-white/[0.02] py-4 text-lg font-medium transition-all duration-300 hover:bg-white/10"
               >
-                Create Account
+                Create New Account
               </button>
 
               {/* Footer */}
@@ -199,7 +199,6 @@ export default function LoginPage() {
 
 
 <FeaturedSection />
-<ImmersiveCanvasSection />
 <Footer />
     </main>
   )

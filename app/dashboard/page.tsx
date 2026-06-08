@@ -1,18 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
-import LogoutButton from "@/components/buttons/LogoutButton";
-import AvatarUpload from "@/components/profile/AvatarUpload";
 import Image from "next/image";
 import Link from "next/link";
+import UploadButton from "@/components/dashboard/UploadButton";
 import {
   Home,
   Compass,
-  Grid2X2,
-  Users,
-  Heart,
   Download,
   Settings,
-  Search,
-  Bell,
 } from "lucide-react";
 
 const purchasedVideos = [
@@ -47,68 +41,6 @@ const purchasedVideos = [
     thumbnail:
       "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?q=80&w=1600&auto=format&fit=crop",
     youtube: "https://youtube.com",
-  },
-];
-
-const suggestedVideos = [
-  {
-    title: "Desert Adventures",
-    creator: "Beyond 180",
-    duration: "6:11",
-    thumbnail:
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop",
-  },
-  {
-    title: "Coral Reefs of Palau",
-    creator: "Oceanic 180",
-    duration: "7:02",
-    thumbnail:
-      "https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?q=80&w=1600&auto=format&fit=crop",
-  },
-  {
-    title: "Into the Ice Caves",
-    creator: "Arctic Visuals",
-    duration: "6:38",
-    thumbnail:
-      "https://images.unsplash.com/photo-1519608487953-e999c86e7455?q=80&w=1600&auto=format&fit=crop",
-  },
-  {
-    title: "Cappadocia Sunrise",
-    creator: "Wanderlust VR",
-    duration: "5:45",
-    thumbnail:
-      "https://images.unsplash.com/photo-1500534623283-312aade485b7?q=80&w=1600&auto=format&fit=crop",
-  },
-];
-
-const featuredVideos = [
-  {
-    title: "Earth From Space",
-    creator: "Horizon 180",
-    duration: "8:03",
-    thumbnail:
-      "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1600&auto=format&fit=crop",
-  },
-  {
-    title: "Wildlife of Africa",
-    creator: "Safari 180",
-    duration: "7:28",
-    thumbnail:
-      "https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=1600&auto=format&fit=crop",
-  },
-  {
-    title: "Surfing Pipeline POV",
-    creator: "Wave Riders",
-    duration: "6:19",
-    thumbnail:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1600&auto=format&fit=crop",
-  },
-  {
-    title: "Machu Picchu Explorer",
-    creator: "Timeless Journeys",
-    duration: "6:55",
-    thumbnail:
-      "https://images.unsplash.com/photo-1526392060635-9d6019884377?q=80&w=1600&auto=format&fit=crop",
   },
 ];
 
@@ -148,10 +80,6 @@ function Section({
                 fill
                 className="object-cover transition duration-500 group-hover:scale-105"
               />
-
-              <div className="absolute left-3 top-3 rounded-md bg-black/70 px-2 py-1 text-xs font-medium text-white">
-                8K
-              </div>
 
               <div className="absolute bottom-3 right-3 rounded-md bg-black/70 px-2 py-1 text-xs text-white">
                 {video.duration}
@@ -211,6 +139,7 @@ export default async function DashboardPage() {
   .single();
 
 
+
   return (
     <main className="flex min-h-screen bg-black text-white">
 
@@ -222,55 +151,50 @@ export default async function DashboardPage() {
           </h1>
         </div>
 
-        <nav className="flex-1 px-4">
-          <div className="space-y-2">
-            <SidebarItem icon={<Home size={18} />} label="Dashboard" active />
-            <SidebarItem icon={<Compass size={18} />} label="Browse" />
-            <SidebarItem icon={<Grid2X2 size={18} />} label="Categories" />
-            <SidebarItem icon={<Users size={18} />} label="Creators" />
-            <SidebarItem icon={<Heart size={18} />} label="Favorites" />
-          </div>
+<nav className="flex-1 px-4">
+  {/* MAIN */}
+  <div className="space-y-2">
+    <SidebarItem
+      icon={<Home size={18} />}
+      label="Dashboard"
+      active
+    />
 
-          <div className="flex-1 px-4">
-            <AvatarUpload userId={""} />
-          </div>
+    <SidebarItem
+      icon={<Compass size={18} />}
+      label="Browse"
+    />
+  </div>
 
-          <div className="mt-10">
-            <p className="mb-3 px-4 text-xs uppercase tracking-widest text-zinc-500">
-              Library
-            </p>
+  {/* CREATOR */}
+<div className="mt-10">
+  <p className="mb-3 px-4 text-xs uppercase tracking-widest text-zinc-500">
+    Creator
+  </p>
+    <UploadButton />
+</div>
 
-            <div className="space-y-2">
-              <SidebarItem
-                icon={<Download size={18} />}
-                label="Purchased"
-              />
-            </div>
-          </div>
+  {/* LIBRARY */}
+  <div className="mt-10">
+    <p className="mb-3 px-4 text-xs uppercase tracking-[0.2em] text-zinc-500">
+      Library
+    </p>
 
-          <div className="mt-10">
-            <p className="mb-3 px-4 text-xs uppercase tracking-widest text-zinc-500">
-              Account
-            </p>
-
-            <div className="space-y-2">
-              <SidebarItem
-                icon={<Settings size={18} />}
-                label="Settings"
-              />
-
-              <LogoutButton />
-            </div>
-          </div>
-        </nav>
-
+    <div className="space-y-2">
+      <SidebarItem
+        icon={<Download size={18} />}
+        label="Purchased"
+      />
+    </div>
+  </div>
+</nav>
         <div className="m-4 rounded-3xl border border-zinc-800 bg-gradient-to-br from-zinc-900 to-zinc-950 p-5">
           <h3 className="text-lg font-semibold">
-            Create & Sell 180° Videos
+            Community Member
           </h3>
 
           <p className="mt-2 text-sm leading-relaxed text-zinc-400">
-            Share your immersive content with audiences around the world.
+            Upload your videos and share your immersive experiences with the world.
           </p>
 
           <button className="mt-5 w-full rounded-xl bg-blue-600 py-3 text-sm font-medium transition hover:bg-blue-500">
@@ -287,7 +211,7 @@ export default async function DashboardPage() {
             <div>
               <h1 className="text-3xl font-bold">
                 
-                - Welcome - {profile?.full_name || ""}</h1>
+                Welcome {profile?.full_name || ""}</h1>
 
               <p className="mt-1 text-zinc-400">
                 Dive back into immersive experiences.
@@ -295,12 +219,9 @@ export default async function DashboardPage() {
             </div>
 
             <div className="flex items-center gap-5">
-              <button className="text-zinc-400 transition hover:text-white">
-                <Search />
-              </button>
 
               <button className="text-zinc-400 transition hover:text-white">
-                <Bell />
+                <Settings />
               </button>
 
 
@@ -311,7 +232,7 @@ export default async function DashboardPage() {
                       alt="Avatar"
                       width={40}
                       height={40}
-                      className="h-10 w-10 rounded-full object-cover"
+                      className="h-11 w-11 rounded-full object-cover"
                     />
                   ) : (
                     <div className="flex h-11 w-11 items-center justify-center rounded-full bg-zinc-800 text-sm text-white">
@@ -326,21 +247,9 @@ export default async function DashboardPage() {
         {/* CONTENT */}
         <div className="px-6 py-8">
           <Section
-            title="Your Purchased Videos"
+            title="Your Uploads"
             subtitle="Your immersive collection"
             videos={purchasedVideos}
-          />
-
-          <Section
-            title="Suggested For You"
-            subtitle="Based on your viewing history"
-            videos={suggestedVideos}
-          />
-
-          <Section
-            title="Featured on Immersive180"
-            subtitle="Handpicked immersive experiences"
-            videos={featuredVideos}
           />
         </div>
       </section>
