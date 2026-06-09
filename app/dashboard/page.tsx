@@ -12,35 +12,17 @@ import {
 const purchasedVideos = [
   {
     title: "Hiking the Canadian Rockies",
-    creator: "Peak Perspective",
     duration: "8:24",
     thumbnail:
       "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1600&auto=format&fit=crop",
-    youtube: "https://youtube.com",
+    video_example: "https://youtube.com",
   },
   {
     title: "Swim with Sea Turtles",
-    creator: "Oceanic 180",
     duration: "6:47",
     thumbnail:
       "https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=1600&auto=format&fit=crop",
-    youtube: "https://youtube.com",
-  },
-  {
-    title: "Northern Lights in Iceland",
-    creator: "Arctic Visuals",
-    duration: "7:15",
-    thumbnail:
-      "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?q=80&w=1600&auto=format&fit=crop",
-    youtube: "https://youtube.com",
-  },
-  {
-    title: "Waterfalls of Costa Rica",
-    creator: "Jungle Frames",
-    duration: "5:32",
-    thumbnail:
-      "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?q=80&w=1600&auto=format&fit=crop",
-    youtube: "https://youtube.com",
+    video_example: "https://youtube.com",
   },
 ];
 
@@ -60,16 +42,12 @@ function Section({
           <h2 className="text-2xl font-semibold text-white">{title}</h2>
           <p className="mt-1 text-sm text-zinc-400">{subtitle}</p>
         </div>
-
-        <button className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-2 text-sm text-white transition hover:border-zinc-700">
-          View all
-        </button>
       </div>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
         {videos.map((video, index) => (
           <Link
-            href={video.youtube || "#"}
+            href={video.video_example || "#"}
             key={index}
             className="group overflow-hidden rounded-2xl border border-zinc-900 bg-zinc-950 transition hover:border-blue-500/40"
           >
@@ -90,10 +68,6 @@ function Section({
               <h3 className="line-clamp-1 text-base font-medium text-white">
                 {video.title}
               </h3>
-
-              <p className="mt-1 text-sm text-zinc-400">
-                by {video.creator}
-              </p>
             </div>
           </Link>
         ))}
@@ -247,7 +221,7 @@ export default async function DashboardPage() {
         {/* CONTENT */}
         <div className="px-6 py-8">
           <Section
-            title="Your Uploads"
+            title="Manage Library"
             subtitle="Your immersive collection"
             videos={purchasedVideos}
           />
