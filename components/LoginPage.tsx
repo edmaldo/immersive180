@@ -1,17 +1,16 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { supabase } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
-import { Eye, EyeOff, Lock, Mail, Zap, ShieldCheck, Users } from "lucide-react"
-import FeaturedSection from "@/components/home/FeaturedSection"
-import Footer from "@/components/home/Footer"
+import { useState } from "react";
+import { supabase } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff, Lock, Mail, Zap, ShieldCheck, Users } from "lucide-react";
+import Footer from "@/components/home/Footer";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   const handleSignup = async () => {
     const { error } = await supabase.auth.signUp({
@@ -19,32 +18,31 @@ export default function LoginPage() {
       password,
       options: {
         emailRedirectTo: "https://immersive180.com/auth/callback",
-  },
-    })
+      },
+    });
 
     if (error) {
-      alert(error.message)
+      alert(error.message);
     } else {
-      alert('Check your email!')
+      alert("Check your email!");
     }
-  }
+  };
 
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
-    })
+    });
 
     if (error) {
-      alert(error.message)
+      alert(error.message);
     } else {
-      router.push("/dashboard")
+      router.push("/dashboard");
     }
-  }
+  };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-black text-white">
-      
+    <main className="relative bg-black text-white">
       {/* Background Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(120,119,198,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(99,102,241,0.18),transparent_30%)]" />
 
@@ -52,19 +50,17 @@ export default function LoginPage() {
       <div className="absolute inset-0 opacity-[0.04] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]" />
 
       {/* Bottom Wave Glow */}
-      <div className="absolute bottom-[-200px] left-[-100px] h-[500px] w-[1200px] rounded-full bg-white/10 blur-3xl opacity-20" />
+      <div className="absolute -bottom-50 -left-25 h-125 w-300 rounded-full bg-white/10 blur-3xl opacity-20" />
 
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-6 py-12">
+      <section className="relative z-10 flex min-h-screen items-center justify-center px-6 py-12">
         <div className="grid w-full max-w-7xl grid-cols-1 gap-20 lg:grid-cols-2">
-
           {/* Left Side */}
           <div className="flex flex-col justify-center">
-            
             {/* Logo */}
             <div className="mb-10 flex items-center">
-  <div className="rounded-2xl border border-white/20 bg-white/[0.03] px-4 py-3 sm:px-6 sm:py-4 backdrop-blur-xl shadow-[0_0_30px_rgba(139,92,246,0.12)]">
-    
-    <span className="
+              <div className="rounded-2xl border border-white/20 bg-white/[0.03] px-4 py-3 sm:px-6 sm:py-4 backdrop-blur-xl shadow-[0_0_30px_rgba(139,92,246,0.12)]">
+                <span
+                  className="
       text-[16px]
       sm:text-[22px]
       md:text-[28px]
@@ -74,15 +70,15 @@ export default function LoginPage() {
       md:tracking-[0.45em]
       text-white
       whitespace-nowrap
-    ">
-      IMMERSIVE
-      <span className="ml-2 sm:ml-3 bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text text-transparent">
-        180
-      </span>
-    </span>
-
-  </div>
-</div>
+    "
+                >
+                  IMMERSIVE
+                  <span className="ml-2 sm:ml-3 bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text text-transparent">
+                    180
+                  </span>
+                </span>
+              </div>
+            </div>
 
             <h1 className="max-w-xl text-5xl font-light leading-tight tracking-tight md:text-7xl">
               <span className="bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text text-transparent">
@@ -91,7 +87,8 @@ export default function LoginPage() {
             </h1>
 
             <p className="mt-8 max-w-lg text-lg leading-relaxed text-white/60">
-              The all-in-one platform for VR creators, publishers, and consumers.
+              The all-in-one platform for VR creators, publishers, and
+              consumers.
             </p>
 
             {/* Features */}
@@ -108,8 +105,7 @@ export default function LoginPage() {
 
               <div className="flex items-center gap-2">
                 <Users size={18} />
-                <span>Community-Driven
-                </span>
+                <span>Community-Driven</span>
               </div>
             </div>
           </div>
@@ -117,7 +113,6 @@ export default function LoginPage() {
           {/* Right Side */}
           <div className="flex items-center justify-center">
             <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/[0.04] p-8 shadow-2xl backdrop-blur-2xl">
-
               <div className="mb-8">
                 <h2 className="text-4xl font-semibold tracking-tight">
                   Welcome
@@ -186,20 +181,12 @@ export default function LoginPage() {
               >
                 Create New Account
               </button>
-
-              {/* Footer */}
-              <p className="mt-8 text-center text-sm leading-relaxed text-white/30">
-                By continuing, you agree to our Terms of Service and Privacy
-                Policy.
-              </p>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-
-<FeaturedSection />
-<Footer />
+      <Footer />
     </main>
-  )
+  );
 }

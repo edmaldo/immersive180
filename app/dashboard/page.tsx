@@ -1,80 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
 import Image from "next/image";
-import Link from "next/link";
 import UploadButton from "@/components/dashboard/UploadButton";
+import VideoLibrary from "@/components/dashboard/VideoLibrary";
 import {
   Home,
   Compass,
   Download,
   Settings,
 } from "lucide-react";
-
-const purchasedVideos = [
-  {
-    title: "Hiking the Canadian Rockies",
-    duration: "8:24",
-    thumbnail:
-      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1600&auto=format&fit=crop",
-    video_example: "https://youtube.com",
-  },
-  {
-    title: "Swim with Sea Turtles",
-    duration: "6:47",
-    thumbnail:
-      "https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=1600&auto=format&fit=crop",
-    video_example: "https://youtube.com",
-  },
-];
-
-function Section({
-  title,
-  subtitle,
-  videos,
-}: {
-  title: string;
-  subtitle: string;
-  videos: any[];
-}) {
-  return (
-    <section className="mb-12">
-      <div className="mb-5 flex items-end justify-between">
-        <div>
-          <h2 className="text-2xl font-semibold text-white">{title}</h2>
-          <p className="mt-1 text-sm text-zinc-400">{subtitle}</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
-        {videos.map((video, index) => (
-          <Link
-            href={video.video_example || "#"}
-            key={index}
-            className="group overflow-hidden rounded-2xl border border-zinc-900 bg-zinc-950 transition hover:border-blue-500/40"
-          >
-            <div className="relative aspect-video overflow-hidden">
-              <Image
-                src={video.thumbnail}
-                alt={video.title}
-                fill
-                className="object-cover transition duration-500 group-hover:scale-105"
-              />
-
-              <div className="absolute bottom-3 right-3 rounded-md bg-black/70 px-2 py-1 text-xs text-white">
-                {video.duration}
-              </div>
-            </div>
-
-            <div className="p-4">
-              <h3 className="line-clamp-1 text-base font-medium text-white">
-                {video.title}
-              </h3>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 function SidebarItem({
   icon,
@@ -111,6 +44,16 @@ export default async function DashboardPage() {
   .select("full_name, avatar_url")
   .eq("id", user?.id)
   .single();
+
+    const { data: videos, error } = await supabase
+    .from("videos")
+    .select("*")
+    .eq("creator_id", user?.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+  }
 
 
 
@@ -162,19 +105,6 @@ export default async function DashboardPage() {
     </div>
   </div>
 </nav>
-        <div className="m-4 rounded-3xl border border-zinc-800 bg-gradient-to-br from-zinc-900 to-zinc-950 p-5">
-          <h3 className="text-lg font-semibold">
-            Community Member
-          </h3>
-
-          <p className="mt-2 text-sm leading-relaxed text-zinc-400">
-            Upload your videos and share your immersive experiences with the world.
-          </p>
-
-          <button className="mt-5 w-full rounded-xl bg-blue-600 py-3 text-sm font-medium transition hover:bg-blue-500">
-            Become a Creator
-          </button>
-        </div>
       </aside>
 
       {/* Main Content */}
@@ -220,11 +150,7 @@ export default async function DashboardPage() {
 
         {/* CONTENT */}
         <div className="px-6 py-8">
-          <Section
-            title="Manage Library"
-            subtitle="Your immersive collection"
-            videos={purchasedVideos}
-          />
+            <VideoLibrary videos={videos || []} />
         </div>
       </section>
     </main>
