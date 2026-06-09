@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 
+import { createClient } from "@/lib/supabase/server"
+
 export async function GET(
   req: NextRequest,
   {
@@ -11,7 +13,11 @@ export async function GET(
   const { id } = await params
 
   try {
-    const res = await fetch(
+    /*
+      FETCH FROM BUNNY
+    */
+
+    const bunnyRes = await fetch(
       `https://video.bunnycdn.com/library/${process.env.BUNNY_LIBRARY_ID}/videos/${id}`,
       {
         headers: {
@@ -23,13 +29,74 @@ export async function GET(
       }
     )
 
-    const data = await res.json()
+    if (!bunnyRes.ok) {
+      throw new Error(
+        "Failed Bunny fetch"
+      )
+    }
 
-    return NextResponse.json(data)
+    const bunnyData =
+      await bunnyRes.json()
+
+    /*
+      STATUS INFO
+    */
+
+    const encodeProgress =
+      bunnyData.encodeProgress || 0
+
+    const ready =
+      bunnyData.status === 3
+
+    /*
+      THUMBNAIL
+    */
+
+    const thumbnailUrl = `https://vz-${process.env.NEXT_PUBLIC_BUNNY_LIBRARY_ID}.b-cdn.net/${id}/thumbnail.jpg`
+
+    /*
+      UPDATE SUPABASE
+    */
+
+    const supabase =
+      await createClient()
+
+    await supabase
+      .from("videos")
+      .update({
+        duration:
+          bunnyData.length || null,
+
+        thumbnail_url:
+          thumbnailUrl,
+
+        title:
+          bunnyData.title || null,
+      })
+      .eq(
+        "bunny_video_id",
+        id
+      )
+
+    return NextResponse.json({
+      ready,
+
+      status: bunnyData.status,
+
+      encodeProgress,
+
+      duration:
+        bunnyData.length,
+
+      thumbnailUrl,
+    })
   } catch (error) {
+    console.error(error)
+
     return NextResponse.json(
       {
-        error: "Failed to fetch Bunny status",
+        error:
+          "Failed to fetch status",
       },
       { status: 500 }
     )

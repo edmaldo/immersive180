@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     const supabase = await createClient()
 
     /*
-      AUTH USER
+      AUTH
     */
 
     const {
@@ -22,14 +22,25 @@ export async function POST(req: NextRequest) {
     }
 
     /*
-      GET FILE
+      FORM DATA
     */
 
     const formData = await req.formData()
 
     const file = formData.get("file") as File
 
-    const title = formData.get("title") as string
+    const title =
+      (formData.get("title") as string) ||
+      file.name
+
+    const description =
+      (formData.get(
+        "description"
+      ) as string) || ""
+
+    const price = Number(
+      formData.get("price") || 0
+    )
 
     if (!file) {
       return NextResponse.json(
@@ -39,7 +50,7 @@ export async function POST(req: NextRequest) {
     }
 
     /*
-      CREATE BUNNY VIDEO
+      CREATE VIDEO ON BUNNY
     */
 
     const createVideoRes = await fetch(
@@ -47,8 +58,10 @@ export async function POST(req: NextRequest) {
       {
         method: "POST",
         headers: {
-          AccessKey: process.env.BUNNY_API_KEY!,
-          "Content-Type": "application/json",
+          AccessKey:
+            process.env.BUNNY_API_KEY!,
+          "Content-Type":
+            "application/json",
         },
         body: JSON.stringify({
           title,
@@ -56,7 +69,14 @@ export async function POST(req: NextRequest) {
       }
     )
 
-    const bunnyVideo = await createVideoRes.json()
+    if (!createVideoRes.ok) {
+      throw new Error(
+        "Failed to create Bunny video"
+      )
+    }
+
+    const bunnyVideo =
+      await createVideoRes.json()
 
     /*
       UPLOAD FILE TO BUNNY
@@ -67,31 +87,43 @@ export async function POST(req: NextRequest) {
       {
         method: "PUT",
         headers: {
-          AccessKey: process.env.BUNNY_API_KEY!,
-          "Content-Type": "application/octet-stream",
+          AccessKey:
+            process.env.BUNNY_API_KEY!,
+          "Content-Type":
+            "application/octet-stream",
         },
         body: file,
       }
     )
 
     if (!uploadRes.ok) {
-      throw new Error("Upload failed")
+      throw new Error(
+        "Bunny upload failed"
+      )
     }
 
     /*
-      SAVE TO SUPABASE
+      SAVE VIDEO ROW
     */
-    const { data: videoRow, error } =
+
+    const { data, error } =
       await supabase
         .from("videos")
         .insert({
           creator_id: user.id,
 
-          bunny_video_id: bunnyVideo.guid,
+          bunny_video_id:
+            bunnyVideo.guid,
 
           title,
 
-          status: "processing",
+          description,
+
+          price,
+
+          thumbnail_url: null,
+
+          duration: null,
         })
         .select()
         .single()
@@ -100,31 +132,29 @@ export async function POST(req: NextRequest) {
       console.error(error)
 
       return NextResponse.json(
-        { error: "Database insert failed" },
+        {
+          error:
+            "Failed to insert video",
+        },
         { status: 500 }
       )
     }
 
-    /*
-      SUCCESS
-    */
-
     return NextResponse.json({
       success: true,
 
-      bunnyVideoId: bunnyVideo.guid,
-
-      video: videoRow,
+      video: data,
     })
-} catch (error: any) {
-  console.error("UPLOAD API ERROR:")
-  console.error(error)
+  } catch (error: any) {
+    console.error(error)
 
-  return NextResponse.json(
-    {
-      error: error.message || "Upload failed",
-    },
-    { status: 500 }
-  )
-}
+    return NextResponse.json(
+      {
+        error:
+          error.message ||
+          "Upload failed",
+      },
+      { status: 500 }
+    )
+  }
 }
