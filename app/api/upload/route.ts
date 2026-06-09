@@ -1,109 +1,109 @@
-import { NextRequest, NextResponse } from "next/server"
-
+import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 
-export async function POST(req: NextRequest) {
-  try {
-    const supabase = await createClient()
+const BUNNY_LIBRARY_ID =
+  process.env.BUNNY_LIBRARY_ID!
 
-    /*
-      AUTH
-    */
+const BUNNY_API_KEY =
+  process.env.BUNNY_API_KEY!
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+export async function POST(req: Request) {
+  const supabase =
+  await createClient()
 
-    if (!user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      )
+const {
+  data: { user },
+} = await supabase.auth.getUser()
+
+if (!user) {
+  return NextResponse.json(
+    {
+      error: "Unauthorized",
+    },
+    {
+      status: 401,
     }
+  )
+}
+  try {
+    const formData =
+      await req.formData()
 
-    /*
-      FORM DATA
-    */
-
-    const formData = await req.formData()
-
-    const file = formData.get("file") as File
-
-    const title =
-      (formData.get("title") as string) ||
-      file.name
-
-    const description =
-      (formData.get(
-        "description"
-      ) as string) || ""
-
-    const price = Number(
-      formData.get("price") || 0
-    )
+    const file =
+      formData.get("file") as File
 
     if (!file) {
       return NextResponse.json(
-        { error: "No file uploaded" },
-        { status: 400 }
+        {
+          error: "No file uploaded",
+        },
+        {
+          status: 400,
+        }
       )
     }
 
     /*
-      CREATE VIDEO ON BUNNY
+      STEP 1:
+      CREATE VIDEO OBJECT
     */
 
-    const createVideoRes = await fetch(
-      `https://video.bunnycdn.com/library/${process.env.BUNNY_LIBRARY_ID}/videos`,
+    const createRes = await fetch(
+      `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos`,
       {
         method: "POST",
         headers: {
           AccessKey:
-            process.env.BUNNY_API_KEY!,
+            BUNNY_API_KEY,
           "Content-Type":
             "application/json",
         },
         body: JSON.stringify({
-          title,
+          title: file.name,
         }),
       }
     )
 
-    if (!createVideoRes.ok) {
-      throw new Error(
-        "Failed to create Bunny video"
-      )
-    }
-
     const bunnyVideo =
-      await createVideoRes.json()
+      await createRes.json()
+
+    const videoId =
+      bunnyVideo.guid
 
     /*
-      UPLOAD FILE TO BUNNY
+      STEP 2:
+      UPLOAD VIDEO FILE
     */
 
     const uploadRes = await fetch(
-      `https://video.bunnycdn.com/library/${process.env.BUNNY_LIBRARY_ID}/videos/${bunnyVideo.guid}`,
+      `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos/${videoId}`,
       {
         method: "PUT",
         headers: {
           AccessKey:
-            process.env.BUNNY_API_KEY!,
+            BUNNY_API_KEY,
           "Content-Type":
             "application/octet-stream",
         },
-        body: file,
+        body: await file.arrayBuffer(),
       }
     )
 
     if (!uploadRes.ok) {
-      throw new Error(
-        "Bunny upload failed"
+      return NextResponse.json(
+        {
+          error:
+            "Failed uploading to Bunny",
+        },
+        {
+          status: 500,
+        }
       )
     }
 
     /*
-      SAVE VIDEO ROW
+      STEP 3:
+      CREATE SUPABASE ROW
     */
 
     const { data, error } =
@@ -113,17 +113,15 @@ export async function POST(req: NextRequest) {
           creator_id: user.id,
 
           bunny_video_id:
-            bunnyVideo.guid,
+            videoId,
 
-          title,
+          title: file.name,
 
-          description,
+          description: "",
 
-          price,
+          price: 0,
 
-          thumbnail_url: null,
-
-          duration: null,
+          status: "uploading",
         })
         .select()
         .single()
@@ -134,27 +132,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Failed to insert video",
+            "Failed creating DB row",
         },
-        { status: 500 }
+        {
+          status: 500,
+        }
       )
     }
 
     return NextResponse.json({
       success: true,
-
       video: data,
     })
-  } catch (error: any) {
-    console.error(error)
+  } catch (err) {
+    console.error(err)
 
     return NextResponse.json(
       {
         error:
-          error.message ||
-          "Upload failed",
+          "Internal server error",
       },
-      { status: 500 }
+      {
+        status: 500,
+      }
     )
   }
 }

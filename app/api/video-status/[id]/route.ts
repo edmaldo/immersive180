@@ -42,11 +42,13 @@ export async function GET(
       STATUS INFO
     */
 
-    const encodeProgress =
-      bunnyData.encodeProgress || 0
+      const encodeProgress =
+        Number(
+          bunnyData.encodeProgress || 0
+        )
 
-    const ready =
-      bunnyData.status === 3
+      const ready =
+        encodeProgress >= 100
 
     /*
       THUMBNAIL
@@ -61,22 +63,23 @@ export async function GET(
     const supabase =
       await createClient()
 
-    await supabase
-      .from("videos")
-      .update({
-        duration:
-          bunnyData.length || null,
+      await supabase
+        .from("videos")
+        .update({
+          duration:
+            bunnyData.length || null,
 
-        thumbnail_url:
-          thumbnailUrl,
+          thumbnail_url:
+            thumbnailUrl,
 
-        title:
-          bunnyData.title || null,
-      })
-      .eq(
-        "bunny_video_id",
-        id
-      )
+          status: ready
+            ? "uploaded"
+            : "processing",
+        })
+        .eq(
+          "bunny_video_id",
+          id
+        )
 
     return NextResponse.json({
       ready,
@@ -99,6 +102,99 @@ export async function GET(
           "Failed to fetch status",
       },
       { status: 500 }
+    )
+  }
+}
+
+export async function PATCH(
+  req: NextRequest,
+  {
+    params,
+  }: {
+    params: Promise<{ id: string }>
+  }
+) {
+  const { id } = await params
+
+  try {
+    const body =
+      await req.json()
+
+    const {
+      title,
+      description,
+      price,
+    } = body
+
+    const supabase =
+      await createClient()
+
+    /*
+      UPDATE DATABASE
+    */
+
+    const { error } =
+      await supabase
+        .from("videos")
+        .update({
+          title,
+          description,
+          price,
+          status: "processing",
+        })
+        .eq(
+          "bunny_video_id",
+          id
+        )
+
+    if (error) {
+      console.error(error)
+
+      return NextResponse.json(
+        {
+          error:
+            "Failed updating video",
+        },
+        {
+          status: 500,
+        }
+      )
+    }
+
+    /*
+      UPDATE BUNNY TITLE
+    */
+
+    await fetch(
+      `https://video.bunnycdn.com/library/${process.env.BUNNY_LIBRARY_ID}/videos/${id}`,
+      {
+        method: "POST",
+        headers: {
+          AccessKey:
+            process.env.BUNNY_API_KEY!,
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          title,
+        }),
+      }
+    )
+
+    return NextResponse.json({
+      success: true,
+    })
+  } catch (error) {
+    console.error(error)
+
+    return NextResponse.json(
+      {
+        error:
+          "Failed updating metadata",
+      },
+      {
+        status: 500,
+      }
     )
   }
 }

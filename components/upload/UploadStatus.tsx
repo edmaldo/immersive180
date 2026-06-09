@@ -1,9 +1,9 @@
 "use client"
 
 import {
-  CheckCircle2,
   Loader2,
-  Clock3,
+  CheckCircle2,
+  X,
 } from "lucide-react"
 
 import {
@@ -11,15 +11,23 @@ import {
   useState,
 } from "react"
 
+import { useRouter } from "next/navigation"
+
 interface UploadStatusProps {
   videoId: string
   title: string
+  initialStatus?: string
+  onClose?: () => void
 }
 
 export default function UploadStatus({
   videoId,
   title,
+  onClose,
 }: UploadStatusProps) {
+
+  const router = useRouter()
+  
   const [progress, setProgress] =
     useState(0)
 
@@ -30,7 +38,7 @@ export default function UploadStatus({
     useState<string | null>(null)
 
   const [duration, setDuration] =
-    useState<number | null>(null)
+    useState<string>("00:00")
 
   useEffect(() => {
     let interval: NodeJS.Timeout
@@ -38,25 +46,76 @@ export default function UploadStatus({
     async function pollStatus() {
       try {
         const res = await fetch(
-          `/api/video-status/${videoId}`
+          `/api/video-status/${videoId}`,
+          {
+            cache: "no-store",
+          }
         )
 
-        const data = await res.json()
+        const data =
+          await res.json()
 
-        setProgress(
-          data.encodeProgress || 0
+        console.log(
+          "BUNNY STATUS:",
+          data
         )
 
-        setDuration(
-          data.duration || null
-        )
+        /*
+          PROGRESS
+        */
+
+        const currentProgress =
+          Number(
+            data.encodeProgress || 0
+          )
+
+        setProgress(currentProgress)
+
+        /*
+          THUMBNAIL
+        */
 
         setThumbnail(
           data.thumbnailUrl || null
         )
 
-        if (data.ready) {
+        /*
+          DURATION
+        */
+
+        const totalSeconds =
+          Math.floor(
+            data.duration || 0
+          )
+
+        const mins =
+          Math.floor(
+            totalSeconds / 60
+          )
+
+        const secs =
+          totalSeconds % 60
+
+        setDuration(
+          `${String(mins).padStart(
+            2,
+            "0"
+          )}:${String(secs).padStart(
+            2,
+            "0"
+          )}`
+        )
+
+        /*
+          READY
+        */
+
+        if (
+          currentProgress >= 100
+        ) {
           setReady(true)
+
+          setProgress(100)
 
           clearInterval(interval)
         }
@@ -77,8 +136,34 @@ export default function UploadStatus({
   }, [videoId])
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950">
-      {/* MEDIA */}
+    <div className="overflow-hidden rounded-[28px] border border-white/10 bg-[#111111] shadow-2xl">
+      {/* TOP BAR */}
+      <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+        <div>
+          <h2 className="text-lg font-semibold text-white">
+            Upload Status
+          </h2>
+
+          <p className="text-sm text-zinc-500">
+            {ready
+              ? "Video processing completed"
+              : "Encoding your video"}
+          </p>
+        </div>
+
+        {ready && (
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/10"
+          >
+            <X className="h-4 w-4" />
+
+            Close Window
+          </button>
+        )}
+      </div>
+
+      {/* VIDEO */}
       <div className="aspect-video bg-black">
         {ready ? (
           <iframe
@@ -88,22 +173,18 @@ export default function UploadStatus({
             allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
             allowFullScreen
           />
-        ) : thumbnail ? (
-          <img
-            src={thumbnail}
-            alt={title}
-            className="h-full w-full object-cover opacity-60"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center">
-            <Loader2 className="h-12 w-12 animate-spin text-violet-500" />
-          </div>
-        )}
+            ) : (
+              <img
+                src={thumbnail || "/placeholders/immersive180_tn.png"}
+                alt={title}
+                className="h-full w-full object-cover opacity-80"
+              />
+            )}
       </div>
 
       {/* CONTENT */}
       <div className="space-y-6 p-8">
-        {/* HEADER */}
+        {/* STATUS */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {ready ? (
@@ -112,22 +193,31 @@ export default function UploadStatus({
               <Loader2 className="h-5 w-5 animate-spin text-violet-400" />
             )}
 
-            <span className="font-medium">
+            <span className="font-medium text-white">
               {ready
                 ? "Video Ready"
-                : "Encoding Video"}
+                : "Processing Video"}
             </span>
           </div>
 
-          <span className="text-sm text-zinc-400">
+          <span className="text-sm font-medium text-zinc-300">
             {progress}%
           </span>
         </div>
 
-        {/* PROGRESS */}
-        <div className="h-3 overflow-hidden rounded-full bg-zinc-800">
+        {/* PROGRESS BAR */}
+        <div className="relative h-4 overflow-hidden rounded-full bg-zinc-800">
+          {/* glow */}
           <div
-            className="h-full rounded-full bg-violet-500 transition-all duration-500"
+            className="absolute inset-y-0 left-0 rounded-full bg-violet-500/30 blur-md transition-all duration-700"
+            style={{
+              width: `${progress}%`,
+            }}
+          />
+
+          {/* actual bar */}
+          <div
+            className="relative h-full rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-500 to-indigo-500 transition-all duration-700"
             style={{
               width: `${progress}%`,
             }}
@@ -136,31 +226,23 @@ export default function UploadStatus({
 
         {/* META */}
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-2xl border border-zinc-800 bg-black/30 p-5">
+          <div className="rounded-2xl border border-white/10 bg-black/40 p-5">
             <p className="text-sm text-zinc-500">
-              Video Title
+              Title
             </p>
 
-            <p className="mt-2 font-medium">
+            <p className="mt-2 font-medium text-white">
               {title}
             </p>
           </div>
 
-          <div className="rounded-2xl border border-zinc-800 bg-black/30 p-5">
-            <div className="flex items-center gap-2 text-sm text-zinc-500">
-              <Clock3 className="h-4 w-4" />
-
+          <div className="rounded-2xl border border-white/10 bg-black/40 p-5">
+            <p className="text-sm text-zinc-500">
               Duration
-            </div>
+            </p>
 
-            <p className="mt-2 font-medium">
-              {duration
-                ? `${Math.floor(
-                    duration / 60
-                  )}:${String(
-                    duration % 60
-                  ).padStart(2, "0")}`
-                : "Processing"}
+            <p className="mt-2 font-medium text-white">
+              {duration}
             </p>
           </div>
         </div>
