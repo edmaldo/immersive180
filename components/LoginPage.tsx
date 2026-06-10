@@ -49,9 +49,6 @@ export default function LoginPage() {
       {/* Background Texture */}
       <div className="absolute inset-0 opacity-[0.04] bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')]" />
 
-      {/* Bottom Wave Glow */}
-      <div className="absolute -bottom-50 -left-25 h-125 w-300 rounded-full bg-white/10 blur-3xl opacity-20" />
-
       <section className="relative z-10 flex min-h-screen items-center justify-center px-6 py-12">
         <div className="grid w-full max-w-7xl grid-cols-1 gap-20 lg:grid-cols-2">
           {/* Left Side */}

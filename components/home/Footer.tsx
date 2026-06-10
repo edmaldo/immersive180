@@ -1,7 +1,8 @@
 // components/home/Footer.tsx
 
 import Link from "next/link";
-import { Globe } from "lucide-react";
+import { SocialButton } from "@/components/buttons/SocialButton";
+import { SiInstagram, SiTiktok, SiX } from "@icons-pack/react-simple-icons";
 
 export default function Footer() {
   return (
@@ -13,19 +14,31 @@ export default function Footer() {
       <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-14 px-6 py-20 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           {/* BRAND */}
-          <div className="overflow-visible">
-            <img
-              src="/logo.svg"
-              alt="Immersive180 Logo"
-              className="h-8 w-auto"
-            />
+          <div
+            className="
+                  text-sm
+                  font-extralight
+                  tracking-[0.25em]
+                  sm:tracking-[0.35em]
+                  md:tracking-[0.45em]
+                  text-white
+                  whitespace-nowrap
+                "
+          >
+            IMMERSIVE
+            <span className="ml-2 sm:ml-3 bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text text-transparent">
+              180
+            </span>
           </div>
 
           {/* SOCIAL BUTTONS */}
           <div className="mt-5 flex items-center gap-4">
-            <SocialButton />
-            <SocialButton />
-            <SocialButton />
+            <SocialButton icon={SiX} href="https://www.x.com/" />
+            <SocialButton
+              icon={SiInstagram}
+              href="https://www.instagram.com/"
+            />
+            <SocialButton icon={SiTiktok} href="https://www.tiktok.com/" />
           </div>
         </div>
 
@@ -46,7 +59,6 @@ export default function Footer() {
           <div className="mt-6 space-y-4">
             <FooterLink label="About Us" />
             <FooterLink label="How It Works" />
-            <FooterLink label="Contact" />
           </div>
         </div>
 
@@ -91,25 +103,12 @@ export default function Footer() {
             <div className="h-4 w-px bg-white/10" />
 
             <Link href="#" className="transition hover:text-[#9f93ff]">
-              DMCA
-            </Link>
-
-            <div className="h-4 w-px bg-white/10" />
-
-            <Link href="#" className="transition hover:text-[#9f93ff]">
-              Support
+              Contact
             </Link>
           </div>
 
           {/* BOTTOM ROW */}
           <div className="mt-8 flex flex-row items-center justify-center gap-4 text-sm text-zinc-600">
-            <div className="flex items-center gap-2">
-              <Globe size={15} />
-              <span>English (US)</span>
-            </div>
-
-            <div className="h-4 w-px bg-white/10" />
-
             <p>© 2026 Immersive180. All rights reserved.</p>
           </div>
         </div>
@@ -138,13 +137,5 @@ function FooterLink({ label }: { label: string }) {
     >
       {label}
     </Link>
-  );
-}
-
-function SocialButton() {
-  return (
-    <button className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/3 text-zinc-400 transition-all duration-300 hover:border-[#8b7cff]/50 hover:bg-[#8b7cff]/10 hover:text-white">
-      <Globe size={18} />
-    </button>
   );
 }
