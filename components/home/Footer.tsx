@@ -11,7 +11,7 @@ export default function Footer() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(124,92,255,0.14),transparent_55%)] pointer-events-none" />
 
       {/* MAIN GRID */}
-      <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-14 px-6 py-20 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-14 px-6 py-16 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           {/* BRAND */}
           <div

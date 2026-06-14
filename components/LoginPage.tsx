@@ -12,22 +12,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
-  const handleSignup = async () => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: "https://immersive180.com/auth/callback",
-      },
-    });
-
-    if (error) {
-      alert(error.message);
-    } else {
-      alert("Check your email!");
-    }
-  };
-
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -173,7 +157,7 @@ export default function LoginPage() {
 
               {/* Sign Up */}
               <button
-                onClick={handleSignup}
+                onClick={() => router.push("/signup")}
                 className="w-full rounded-2xl border border-white/10 bg-white/[0.02] py-4 text-lg font-medium transition-all duration-300 hover:bg-white/10"
               >
                 Create New Account

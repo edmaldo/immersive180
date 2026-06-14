@@ -1,47 +1,36 @@
-import { redirect } from "next/navigation"
-import { createClient } from "@/lib/supabase/server"
-import CompleteProfileModal from "@/components/dashboard/CompleteProfileModal"
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
+  const supabase = await createClient();
 
-  const supabase = await createClient()
-
-  // AUTH CHECK
+  // CHECK AUTH
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
+  // NOT LOGGED IN
   if (!user) {
-    redirect("/")
+    redirect("/");
   }
 
-  // CHECK PROFILE
+  // OPTIONAL:
+  // verify profile exists
   const { data: profile } = await supabase
     .from("profiles")
-    .select("*")
+    .select("id")
     .eq("id", user.id)
-    .maybeSingle()
+    .maybeSingle();
 
-console.log(profile)
-console.log(Error)
+  // if somehow auth exists without profile
+  // send them back to signup
+  if (!profile) {
+    redirect("/signup");
+  }
 
-  return (
-    <div>
-
-      {/* SHOW MODAL IF NO PROFILE */}
-      {!profile && (
-        <CompleteProfileModal
-          userId={user.id}
-          email={user.email || ""}
-        />
-      )}
-
-      {children}
-
-    </div>
-  )
+  return <>{children}</>;
 }
