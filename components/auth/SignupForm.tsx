@@ -63,11 +63,8 @@ export default function SignupForm() {
 
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
-        <div className="flex justify-center mb-10">
-          <h1 className="text-3xl font-semibold tracking-tight">
-            IMMERSIVE
-            <span className="text-violet-500">180</span>
-          </h1>
+        <div className="flex justify-center px-8 py-8">
+          <img src="/logo.svg" alt="Immersive180" className="h-10 w-auto" />
         </div>
 
         {/* Card */}

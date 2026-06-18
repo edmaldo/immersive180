@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Lock, Mail, Zap, ShieldCheck, Users } from "lucide-react";
 import Footer from "@/components/home/Footer";
+import FooterLegal from "@/components/home/FooterLegal";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -86,7 +87,7 @@ export default function LoginPage() {
 
               <div className="flex items-center gap-2">
                 <Users size={18} />
-                <span>Community-Driven</span>
+                <span>Engagement-Driven</span>
               </div>
             </div>
           </div>
@@ -168,6 +169,7 @@ export default function LoginPage() {
       </section>
 
       <Footer />
+      <FooterLegal />
     </main>
   );
 }

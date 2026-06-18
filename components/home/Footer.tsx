@@ -6,7 +6,7 @@ import { SiInstagram, SiTiktok, SiX } from "@icons-pack/react-simple-icons";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/5 bg-black py-24">
+    <footer className="border-t border-white/5 bg-black py-14">
       {/* subtle glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(124,92,255,0.14),transparent_55%)] pointer-events-none" />
 
@@ -69,47 +69,6 @@ export default function Footer() {
           <div className="mt-6 space-y-4">
             <FooterLink label="Create Account" />
             <FooterLink label="Sign In" />
-          </div>
-        </div>
-      </div>
-
-      {/* META STYLE LEGAL LINKS */}
-      <div className="relative border-t border-white/5">
-        <div className="mx-auto max-w-7xl px-6 py-8">
-          {/* LEGAL LINKS */}
-          <div className="mt-2 flex flex-wrap items-center justify-center gap-4 text-sm text-zinc-500">
-            <Link href="#" className="transition hover:text-[#9f93ff]">
-              Terms
-            </Link>
-
-            <div className="h-4 w-px bg-white/10" />
-
-            <Link href="#" className="transition hover:text-[#9f93ff]">
-              Privacy
-            </Link>
-
-            <div className="h-4 w-px bg-white/10" />
-
-            <Link href="#" className="transition hover:text-[#9f93ff]">
-              Cookies
-            </Link>
-
-            <div className="h-4 w-px bg-white/10" />
-
-            <Link href="#" className="transition hover:text-[#9f93ff]">
-              Creator Guidelines
-            </Link>
-
-            <div className="h-4 w-px bg-white/10" />
-
-            <Link href="#" className="transition hover:text-[#9f93ff]">
-              Contact
-            </Link>
-          </div>
-
-          {/* BOTTOM ROW */}
-          <div className="mt-8 flex flex-row items-center justify-center gap-4 text-sm text-zinc-600">
-            <p>© 2026 Immersive180. All rights reserved.</p>
           </div>
         </div>
       </div>
