@@ -57,34 +57,62 @@ export default function SignupForm() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-6 relative overflow-hidden">
+    <div
+      className="
+      min-h-screen
+      bg-black
+      text-white
+      flex
+      justify-center
+      px-6
+      pt-12
+      pb-24
+      relative
+      overflow-hidden
+    "
+    >
       {/* background glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(124,58,237,0.25),transparent_45%)]" />
 
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
-        <div className="flex justify-center px-8 py-8">
-          <img src="/logo.svg" alt="Immersive180" className="h-10 w-auto" />
+        <div className="flex justify-center">
+          <div
+            className="
+              text-2xl
+              sm:text-3xl
+              font-extralight
+              tracking-[0.35em]
+              text-white
+              whitespace-nowrap
+              mb-8
+            "
+          >
+            IMMERSIVE
+            <span className="ml-2 sm:ml-3 bg-gradient-to-r from-violet-400 to-indigo-500 bg-clip-text text-transparent">
+              180
+            </span>
+          </div>
         </div>
 
         {/* Card */}
         <div className="border border-white/10 bg-white/5 backdrop-blur-xl rounded-3xl p-8 shadow-2xl">
-          <h2 className="text-4xl font-semibold mb-2">Create your account</h2>
+          <h2 className="text-4xl text-center font-extralight mb-2">
+            Create new account
+          </h2>
 
-          <p className="text-white/50 mb-8">
-            Join Immersive180 and start sharing your world.
+          <p className="text-white/50 text-center mb-8">
+            Join Immersive180 to access VR distribution
           </p>
 
           <form onSubmit={handleSignup} className="space-y-5">
             {/* Full Name */}
             <div>
-              <label className="text-sm text-white/80 mb-2 block">
-                Full name
-              </label>
+              <label className="text-sm text-white/80 mb-2 block">Name</label>
 
               <input
                 type="text"
-                placeholder="Enter your full name"
+                placeholder="Personal or Business Name"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
@@ -100,7 +128,7 @@ export default function SignupForm() {
 
               <input
                 type="email"
-                placeholder="Enter your email"
+                placeholder="Enter email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

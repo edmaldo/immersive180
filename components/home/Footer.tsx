@@ -67,8 +67,7 @@ export default function Footer() {
           <FooterHeading title="Join" />
 
           <div className="mt-6 space-y-4">
-            <FooterLink label="Create Account" />
-            <FooterLink label="Sign In" />
+            <FooterLink label="Create Account" href="/signup" />
           </div>
         </div>
       </div>
@@ -88,10 +87,10 @@ function FooterHeading({ title }: { title: string }) {
   );
 }
 
-function FooterLink({ label }: { label: string }) {
+function FooterLink({ label, href }: { label: string; href?: string }) {
   return (
     <Link
-      href="#"
+      href={href || "#"}
       className="block text-zinc-500 transition duration-200 hover:text-[#9f93ff]"
     >
       {label}
