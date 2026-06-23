@@ -13,7 +13,7 @@ export default function Footer() {
       {/* MAIN GRID */}
       <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-14 px-6 py-16 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          {/* BRAND */}
+          {/* LOGO */}
           <div
             className="
                   text-sm

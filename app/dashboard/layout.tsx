@@ -79,10 +79,44 @@ export default async function DashboardLayout({
                 {/* LOGO */}
                 <Link
                   href="/dashboard"
-                  className="text-2xl font-bold tracking-tight"
+                  className="
+                    inline-flex
+                    items-center
+                    whitespace-nowrap
+                    transition-all
+                    duration-300
+                    hover:scale-[1.02]
+                  "
                 >
-                  IMMERSIVE
-                  <span className="text-blue-500">180</span>
+                  <span
+                    className="
+                      text-3xl
+                      font-extralight
+                      tracking-[0.12em]
+                      text-white
+                      uppercase
+                      drop-shadow-[0_0_6px_rgba(255,255,255,0.15)]
+                    "
+                  >
+                    IMMERSIVE
+                  </span>
+
+                  <span
+                    className="
+                      text-3xl
+                      font-medium
+                      tracking-[0.08em]
+                      bg-gradient-to-r
+                      from-violet-400
+                      via-blue-400
+                      to-indigo-500
+                      bg-clip-text
+                      text-transparent
+                      drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]
+                    "
+                  >
+                    180
+                  </span>
                 </Link>
               </div>
 
