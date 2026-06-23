@@ -1,255 +1,165 @@
-"use client"
+"use client";
 
-import {
-  Upload,
-  X,
-  Loader2,
-  ImagePlus,
-  Check,
-} from "lucide-react"
+import { Upload, X, Loader2, Check } from "lucide-react";
 
-import {
-  useRef,
-  useState,
-  useEffect,
-} from "react"
+import { useRef, useState, useEffect } from "react";
 
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
 
 function formatDuration(seconds: number) {
-  const mins = Math.floor(seconds / 60)
-  const secs = Math.floor(seconds % 60)
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
 
-  return `${String(mins).padStart(
-    2,
-    "0"
-  )}:${String(secs).padStart(2, "0")}`
+  return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 }
 
 export default function UploadModal({
   open,
   onClose,
 }: {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
 }) {
-  const router = useRouter()
+  const router = useRouter();
 
-  const fileInputRef =
-    useRef<HTMLInputElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const thumbnailInputRef =
-    useRef<HTMLInputElement>(null)
+  const [stage, setStage] = useState<"select" | "uploading">("select");
 
-  const [stage, setStage] = useState<
-    "select" | "uploading"
-  >("select")
+  const [uploading, setUploading] = useState(false);
 
-  const [uploading, setUploading] =
-    useState(false)
+  const [progress, setProgress] = useState(0);
 
-  const [progress, setProgress] =
-    useState(0)
+  const [title, setTitle] = useState("");
 
-  const [title, setTitle] =
-    useState("")
+  const [description, setDescription] = useState("");
 
-  const [description, setDescription] =
-    useState("")
+  const [price, setPrice] = useState("");
 
-  const [price, setPrice] =
-    useState("")
+  const [duration, setDuration] = useState("00:00");
 
-  const [duration, setDuration] =
-    useState("00:00")
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const [selectedFile, setSelectedFile] =
-    useState<File | null>(null)
-
-  const [thumbnail, setThumbnail] =
-    useState<string | null>(null)
-
-  const [videoId, setVideoId] =
-    useState<string | null>(null)
+  const [videoId, setVideoId] = useState<string | null>(null);
 
   useEffect(() => {
-  if (open) {
-    document.body.style.overflow =
-      "hidden"
-  } else {
-    document.body.style.overflow =
-      "auto"
-  }
-
-  return () => {
-    document.body.style.overflow =
-      "auto"
-  }
-}, [open])
-
-  const canSubmit =
-    title.trim() &&
-    description.trim() &&
-    price.trim()
-
-  if (!open) return null
-
-  async function extractDuration(
-    file: File
-  ) {
-    return new Promise<number>(
-      (resolve) => {
-        const video =
-          document.createElement(
-            "video"
-          )
-
-        video.preload = "metadata"
-
-        video.onloadedmetadata = () => {
-          window.URL.revokeObjectURL(
-            video.src
-          )
-
-          resolve(video.duration)
-        }
-
-        video.src =
-          URL.createObjectURL(file)
-      }
-    )
-  }
-
-  async function handleFile(
-    file: File
-  ) {
-    if (
-      !file.type.startsWith(
-        "video/"
-      )
-    ) {
-      alert(
-        "Please upload a video file."
-      )
-
-      return
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
     }
 
-    setSelectedFile(file)
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [open]);
 
-    const localDuration =
-      await extractDuration(file)
+  const canSubmit = title.trim() && description.trim() && price.trim();
 
-    setDuration(
-      formatDuration(localDuration)
-    )
+  if (!open) return null;
 
-    setTitle(
-      file.name.replace(/\.[^/.]+$/, "")
-    )
+  async function extractDuration(file: File) {
+    return new Promise<number>((resolve) => {
+      const video = document.createElement("video");
 
-    setStage("uploading")
+      video.preload = "metadata";
 
-    uploadVideo(file)
+      video.onloadedmetadata = () => {
+        window.URL.revokeObjectURL(video.src);
+
+        resolve(video.duration);
+      };
+
+      video.src = URL.createObjectURL(file);
+    });
   }
 
-  async function uploadVideo(
-    file: File
-  ) {
+  async function handleFile(file: File) {
+    if (!file.type.startsWith("video/")) {
+      alert("Please upload a video file.");
+
+      return;
+    }
+
+    setSelectedFile(file);
+
+    const localDuration = await extractDuration(file);
+
+    setDuration(formatDuration(localDuration));
+
+    setTitle(file.name.replace(/\.[^/.]+$/, ""));
+
+    setStage("uploading");
+
+    uploadVideo(file);
+  }
+
+  async function uploadVideo(file: File) {
     try {
-      setUploading(true)
+      setUploading(true);
 
-      const formData =
-        new FormData()
+      const formData = new FormData();
 
-      formData.append("file", file)
+      formData.append("file", file);
 
-      const xhr =
-        new XMLHttpRequest()
+      const xhr = new XMLHttpRequest();
 
-      xhr.open(
-        "POST",
-        "/api/upload"
-      )
+      xhr.open("POST", "/api/upload");
 
-      xhr.upload.onprogress = (
-        event
-      ) => {
-        if (
-          event.lengthComputable
-        ) {
-          const percent =
-            Math.round(
-              (event.loaded /
-                event.total) *
-                100
-            )
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const percent = Math.round((event.loaded / event.total) * 100);
 
-          setProgress(percent)
+          setProgress(percent);
         }
-      }
+      };
 
       xhr.onload = () => {
-        const data = JSON.parse(
-          xhr.responseText
-        )
+        const data = JSON.parse(xhr.responseText);
 
         if (xhr.status >= 400) {
-          alert(
-            data.error ||
-              "Upload failed"
-          )
+          alert(data.error || "Upload failed");
 
-          return
+          return;
         }
 
-        setVideoId(
-          data.video.bunny_video_id
-        )
+        setVideoId(data.video.bunny_video_id);
 
-        setUploading(false)
-      }
+        setUploading(false);
+      };
 
       xhr.onerror = () => {
-        alert("Upload failed")
-      }
+        alert("Upload failed");
+      };
 
-      xhr.send(formData)
+      xhr.send(formData);
     } catch (err) {
-      console.error(err)
+      console.error(err);
     }
   }
 
   async function completeUpload() {
-    if (!videoId) return
+    if (!videoId) return;
 
-    const res = await fetch(
-      `/api/video-status/${videoId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          description,
-          price,
-        }),
-      }
-    )
+    const res = await fetch(`/api/video-status/${videoId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title,
+        description,
+        price,
+      }),
+    });
 
     if (!res.ok) {
-      alert(
-        "Failed to save metadata"
-      )
+      alert("Failed to save metadata");
 
-      return
+      return;
     }
 
-    router.push(
-      `/dashboard/uploads/${videoId}`
-    )
+    router.push(`/dashboard/uploads/${videoId}`);
   }
 
   return (
@@ -258,13 +168,10 @@ export default function UploadModal({
         {/* HEADER */}
         <div className="flex items-center justify-between border-b border-white/5 px-8 py-5">
           <div>
-            <h2 className="text-xl font-semibold text-white">
-              Upload VR
-            </h2>
+            <h2 className="text-xl font-semibold text-white">Upload VR</h2>
 
             <p className="mt-1 text-sm text-zinc-500">
-              Publish immersive 180°
-              content
+              Publish immersive 180° content
             </p>
           </div>
 
@@ -278,32 +185,30 @@ export default function UploadModal({
 
         {/* SELECT SCREEN */}
         {stage === "select" && (
-        <div className="flex items-center justify-center p-10">
-          <button
-            onClick={() =>
-              fileInputRef.current?.click()
-            }
-            className="group relative flex h-[50vh] min-h-[240px] w-full max-w-4xl flex-col items-center justify-center overflow-hidden rounded-[42px] border border-dashed border-zinc-700 bg-gradient-to-br from-zinc-900 via-[#111111] to-black transition-all duration-300 hover:border-violet-500 hover:bg-zinc-900"
-          >
-            {/* GLOW */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.12),transparent_65%)] opacity-0 transition-opacity duration-300 group-hover:opacity-90" />
+          <div className="flex items-center justify-center p-10">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="group relative flex h-[50vh] min-h-[240px] w-full max-w-4xl flex-col items-center justify-center overflow-hidden rounded-[42px] border border-dashed border-zinc-700 bg-gradient-to-br from-zinc-900 via-[#111111] to-black transition-all duration-300 hover:border-violet-500 hover:bg-zinc-900"
+            >
+              {/* GLOW */}
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.12),transparent_65%)] opacity-0 transition-opacity duration-300 group-hover:opacity-90" />
 
-            {/* CONTENT */}
-            <div className="relative z-10 flex flex-col items-center">
-              <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-white/5 backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
-                <Upload className="h-12 w-12 text-zinc-300" />
+              {/* CONTENT */}
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-white/5 backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
+                  <Upload className="h-12 w-12 text-zinc-300" />
+                </div>
+
+                <h3 className="text-3xl font-semibold tracking-tight text-white">
+                  Drag & Drop VR Videos
+                </h3>
+
+                <p className="mt-3 text-base text-zinc-500">
+                  MP4 • MOV • VR180
+                </p>
               </div>
-
-              <h3 className="text-3xl font-semibold tracking-tight text-white">
-                Drag & Drop VR Videos
-              </h3>
-
-              <p className="mt-3 text-base text-zinc-500">
-                MP4 • MOV • VR180
-              </p>
-            </div>
-          </button>
-        </div>
+            </button>
+          </div>
         )}
 
         {/* UPLOAD STATUS SCREEN */}
@@ -315,9 +220,7 @@ export default function UploadModal({
                 <div className="aspect-video">
                   {selectedFile && (
                     <video
-                      src={URL.createObjectURL(
-                        selectedFile
-                      )}
+                      src={URL.createObjectURL(selectedFile)}
                       className="h-full w-full object-cover"
                     />
                   )}
@@ -335,15 +238,11 @@ export default function UploadModal({
                     )}
 
                     <span className="font-medium text-white">
-                      {uploading
-                        ? "Encoding video..."
-                        : "Upload complete"}
+                      {uploading ? "Encoding video..." : "Upload complete"}
                     </span>
                   </div>
 
-                  <span className="text-sm text-zinc-400">
-                    {progress}%
-                  </span>
+                  <span className="text-sm text-zinc-400">{progress}%</span>
                 </div>
 
                 <div className="h-3 overflow-hidden rounded-full bg-zinc-800">
@@ -364,22 +263,14 @@ export default function UploadModal({
                   type="text"
                   placeholder="Title"
                   value={title}
-                  onChange={(e) =>
-                    setTitle(
-                      e.target.value
-                    )
-                  }
+                  onChange={(e) => setTitle(e.target.value)}
                   className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 text-white outline-none transition focus:border-violet-500"
                 />
 
                 <textarea
                   placeholder="Description"
                   value={description}
-                  onChange={(e) =>
-                    setDescription(
-                      e.target.value
-                    )
-                  }
+                  onChange={(e) => setDescription(e.target.value)}
                   className="min-h-[140px] w-full rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 text-white outline-none transition focus:border-violet-500"
                 />
 
@@ -387,11 +278,7 @@ export default function UploadModal({
                   type="number"
                   placeholder="Price in Dollars"
                   value={price}
-                  onChange={(e) =>
-                    setPrice(
-                      e.target.value
-                    )
-                  }
+                  onChange={(e) => setPrice(e.target.value)}
                   className="w-full rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-4 text-white outline-none transition focus:border-violet-500"
                 />
 
@@ -405,30 +292,6 @@ export default function UploadModal({
                     {duration}
                   </p>
                 </div>
-
-                {/* THUMBNAIL */}
-                <button
-                  onClick={() =>
-                    thumbnailInputRef.current?.click()
-                  }
-                  className="flex h-[140px] items-center justify-center rounded-3xl border border-dashed border-zinc-700 bg-white/[0.02] transition hover:border-violet-500"
-                >
-                  {thumbnail ? (
-                    <img
-                      src={thumbnail}
-                      alt="thumbnail"
-                      className="h-full w-full rounded-3xl object-cover"
-                    />
-                  ) : (
-                    <div className="text-center">
-                      <ImagePlus className="mx-auto mb-3 h-8 w-8 text-zinc-500" />
-
-                      <p className="text-sm text-zinc-400">
-                        Upload Thumbnail
-                      </p>
-                    </div>
-                  )}
-                </button>
               </div>
 
               {/* COMPLETE BUTTON */}
@@ -453,32 +316,14 @@ export default function UploadModal({
           hidden
           accept="video/*"
           onChange={(e) => {
-            const file =
-              e.target.files?.[0]
+            const file = e.target.files?.[0];
 
             if (file) {
-              handleFile(file)
-            }
-          }}
-        />
-
-        <input
-          ref={thumbnailInputRef}
-          type="file"
-          hidden
-          accept="image/*"
-          onChange={(e) => {
-            const file =
-              e.target.files?.[0]
-
-            if (file) {
-              setThumbnail(
-                URL.createObjectURL(file)
-              )
+              handleFile(file);
             }
           }}
         />
       </div>
     </div>
-  )
+  );
 }
